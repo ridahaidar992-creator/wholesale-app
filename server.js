@@ -11,8 +11,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const supabase = createClient(
   const supabase = createClient(
-  "https://yllkvotdhnmiqvxcovpi.supabase.co"
-  "sb_publishable_7FLXEHA0ty0sbsJHSwUmqw_frhob8LK"
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
 );
 // ================= PRODUCTS =================
 
