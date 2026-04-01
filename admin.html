@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin</title>
+
+<style>
+body {
+  background:black;
+  color:white;
+  font-family:Arial;
+  padding:20px;
+}
+
+.topbar {
+  margin-bottom:20px;
+}
+
+.search {
+  padding:8px;
+  width:200px;
+  margin-bottom:15px;
+}
+
+.card {
+  background:#111;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+img {
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <button onclick="window.location.href='index.html'">⬅ Back</button>
+</div>
+
+<h1>Admin Panel</h1>
+
+<input id="search" class="search" placeholder="Search..." oninput="searchProducts()">
+
+<br>
+
+<input id="name" placeholder="Name">
+<input id="price" placeholder="Price">
+<input id="minQuantity" placeholder="Min Qty">
+<input id="description" placeholder="Description">
+<input type="file" id="image">
+
+<button onclick="saveProduct()">Save</button>
+
+<h2>Products</h2>
+<div id="list"></div>
+
+<h2>Orders</h2>
+<div id="orders"></div>
+
+<script>
+const API = "http://localhost:3000";
+
+let editId = null;
+let allProducts = [];
+
+// HELPERS
+function getEl(id) {
+  return document.getElementById(id);
+}
+
+function clearForm() {
+  getEl("name").value = "";
+  getEl("price").value = "";
+  getEl("minQuantity").value = "";
+  getEl("description").value = "";
+  getEl("image").value = "";
+  editId = null;
+}
+
+// LOAD PRODUCTS
+async function loadProducts() {
+  try {
+    const res = await fetch(API + "/products");
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      console.error("Products response is not an array:", data);
+      alert(data.error || "Failed to load products");
+      return;
+    }
+
+    allProducts = data;
+    render(data);
+  } catch (err) {
+    console.error("LOAD PRODUCTS ERROR:", err);
+    alert("Failed to load products");
+  }
+}
+
+// RENDER
+function render(data) {
+  const list = getEl("list");
+  list.innerHTML = "";
+
+  data.forEach((p) => {
+    const safeName = p.name || "No name";
+    const safePrice = p.price ?? 0;
+    const safeImage = p.image_url || "";
+
+    list.innerHTML += `
+      <div class="card">
+        <img src="${safeImage}" alt="${safeName}">
+        <div>
+          <b>${safeName}</b> - ${safePrice}$
+          <br>
+          <button onclick="startEdit(${p.id})">Edit</button>
+          <button onclick="deleteProduct(${p.id})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// SEARCH
+function searchProducts() {
+  const value = getEl("search").value.toLowerCase().trim();
+
+  const filtered = allProducts.filter((p) =>
+    (p.name || "").toLowerCase().includes(value)
+  );
+
+  render(filtered);
+}
+
+// EDIT
+function startEdit(id) {
+  const p = allProducts.find((x) => x.id === id);
+  if (!p) return;
+
+  editId = id;
+  getEl("name").value = p.name || "";
+  getEl("price").value = p.price ?? "";
+  getEl("minQuantity").value = p.min_quantity ?? "";
+  getEl("description").value = p.description || "";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// SAVE
+async function saveProduct() {
+  const nameValue = getEl("name").value.trim();
+  const priceValue = getEl("price").value.trim();
+  const minQuantityValue = getEl("minQuantity").value.trim();
+  const descriptionValue = getEl("description").value.trim();
+  const file = getEl("image").files[0];
+
+  if (!nameValue || !priceValue || !minQuantityValue) {
+    alert("Please fill name, price, and min qty");
+    return;
+  }
+
+  try {
+    if (editId) {
+      const res = await fetch(`${API}/products/${editId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nameValue,
+          price: priceValue,
+          minQuantity: minQuantityValue,
+          description: descriptionValue
+        })
+      });
+
+      const result = await res.json();
+      console.log("EDIT RESULT:", result);
+
+      if (!res.ok) {
+        alert(result.error || "Failed to edit product");
+        return;
+      }
+    } else {
+      const fd = new FormData();
+      fd.append("name", nameValue);
+      fd.append("price", priceValue);
+      fd.append("minQuantity", minQuantityValue);
+      fd.append("description", descriptionValue);
+
+      if (file) fd.append("image", file);
+
+      const res = await fetch(`${API}/products`, {
+        method: "POST",
+        body: fd
+      });
+
+      const result = await res.json();
+      console.log("ADD RESULT:", result);
+
+      if (!res.ok) {
+        alert(result.error || "Failed to add product");
+        return;
+      }
+    }
+
+    clearForm();
+    await loadProducts();
+  } catch (err) {
+    console.error("SAVE ERROR:", err);
+    alert("Something went wrong while saving");
+  }
+}
+
+// DELETE
+async function deleteProduct(id) {
+  try {
+    const res = await fetch(`${API}/products/${id}`, { method: "DELETE" });
+    const result = await res.json();
+    console.log("DELETE RESULT:", result);
+
+    if (!res.ok) {
+      alert(result.error || "Failed to delete product");
+      return;
+    }
+
+    await loadProducts();
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    alert("Something went wrong while deleting");
+  }
+}
+
+// LOAD ORDERS
+async function loadOrders() {
+  try {
+    const res = await fetch(API + "/orders");
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      console.error("Orders response is not an array:", data);
+      return;
+    }
+
+    getEl("orders").innerHTML = data.map((o) => `
+      <div class="card">
+        ${o.product_name} | Qty: ${o.quantity}
+      </div>
+    `).join("");
+  } catch (err) {
+    console.error("LOAD ORDERS ERROR:", err);
+  }
+}
+
+loadProducts();
+loadOrders();
+</script>
+
+</body>
+</html>

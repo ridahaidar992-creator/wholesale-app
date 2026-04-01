@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wholesale Hub</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0b;
+      color: white;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: #111;
+    }
+
+    .logo {
+      font-size: 24px;
+      color: #00ffc3;
+      font-weight: bold;
+    }
+
+    .admin-login {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .admin-login input {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      width: 140px;
+    }
+
+    .admin-login button {
+      padding: 8px 14px;
+      background: #00ffc3;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .hero {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 60px;
+      color: #00ffc3;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #ccc;
+      max-width: 600px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .browse-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #00ffc3;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    .browse-btn:hover {
+      transform: scale(1.05);
+      background: #00d6a8;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: #111;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">Wholesale Hub</div>
+
+    <div class="admin-login">
+      <input type="password" id="password" placeholder="Admin password">
+      <button onclick="login()">Login</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Wholesale Hub</h1>
+    <p>
+      Browse high-quality products and place orders fast through WhatsApp.
+      A simple wholesale marketplace with admin product management.
+    </p>
+    <button class="browse-btn" onclick="goCustomer()">Browse Products</button>
+  </div>
+
+  <div class="footer">
+    © 2026 Wholesale Hub • WhatsApp: +961 81 958 288
+  </div>
+
+  <script>
+    function goCustomer() {
+      window.location.href = "customer.html";
+    }
+
+    function login() {
+      const password = document.getElementById("password").value;
+
+      if (password === "sarah500202") {
+        window.location.href = "admin.html";
+      } else {
+        alert("Wrong password");
+      }
+    }
+  </script>
+
+</body>
+</html>
