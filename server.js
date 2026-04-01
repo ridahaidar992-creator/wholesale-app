@@ -10,7 +10,6 @@ app.use(express.json());
 const upload = multer({ storage: multer.memoryStorage() });
 
 const supabase = createClient(
-  const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
