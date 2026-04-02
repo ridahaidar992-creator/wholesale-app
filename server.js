@@ -7,6 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 const supabase = createClient(
@@ -186,6 +190,7 @@ app.post("/orders", async (req, res) => {
     res.status(500).json({ error: "Server crash while creating order" });
   }
 });
+
 
 // GET ORDERS
 app.get("/orders", async (req, res) => {
