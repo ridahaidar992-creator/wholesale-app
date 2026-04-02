@@ -1,4 +1,4 @@
-const API = "http://localhost:3000";
+const API = "https://wholesale-app-k4mq.onrender.com";
 
 let products = [];
 let selectedProduct = null;
