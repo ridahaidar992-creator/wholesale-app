@@ -1,15 +1,15 @@
-const express = require("express");
+const express = require("express"); 
+const path = require('path');
 const cors = require("cors");
 const multer = require("multer");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
+app.use(express.static(path.join(__dirname)));
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("API is running 🚀");
-});
+
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -190,8 +190,9 @@ app.post("/orders", async (req, res) => {
     res.status(500).json({ error: "Server crash while creating order" });
   }
 });
-
-
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 // GET ORDERS
 app.get("/orders", async (req, res) => {
   try {
